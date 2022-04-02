@@ -3,20 +3,30 @@ interface Props {
   children: React.ReactNode;
 }
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/App.css';
+import '../styles/Main.css';
 import { Layout, Menu, Switch, Divider, Breadcrumb } from 'antd';
+import { construct, FileNode, GqlNode as Node } from '../util/file-tree';
 import {
   MailOutlined,
   CalendarOutlined,
   AppstoreOutlined,
   SettingOutlined,
+  CaretRightFilled,
+  CaretDownFilled,
   LinkOutlined,
+  FileOutlined,
 } from '@ant-design/icons';
 import Fstree from './fs-tree';
 import DirectoryTree from './directory-tree';
+import { useStaticQuery, graphql } from 'gatsby';
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
+
+type GqlNode = {
+  node: Node;
+};
 
 /**
  * What does a menu tree need?
@@ -35,12 +45,88 @@ const { SubMenu } = Menu;
  */
 
 const FSLayout = ({ pageTitle, children }: Props) => {
-  const [siderWidth, setSiderWidth] = useState(300); // TODO: set this value based on the file tree height
-  const [collapsed, setCollapsed] = useState(false);
+  const [siderWidth, setSiderWidth] = useState<number>(300); // TODO: set this value based on the file tree height
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [tree, setTree] = useState<FileNode | null>(null);
   const onCollapse = (collapsed: boolean) => {
     setCollapsed(collapsed);
   };
 
+  const onOpenChange = (keys: string[]) => {
+    setOpenKeys(keys);
+    // const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
+    // if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+    //   setOpenKeys(keys);
+    // } else {
+    //   setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+    // }
+  };
+
+  const data = useStaticQuery(graphql`
+    {
+      allFile {
+        edges {
+          node {
+            ext
+            fields {
+              slug
+            }
+            name
+            relativePath
+          }
+        }
+      }
+    }
+  `);
+
+  // initialize the file tree
+  useEffect(() => {
+    setTree(construct(data.allFile.edges.map((node: GqlNode) => node.node)));
+  }, []);
+
+  // update sider width when tree is updated
+  useEffect(() => {
+    if (tree) setSiderWidth(tree.height * 70);
+  }, [tree]);
+
+  // watch openKeys (menu items open)
+  useEffect(() => {
+    console.log(openKeys);
+  }, [openKeys]);
+
+  const constructMenuTree = (_tree: FileNode | null) => {
+    if (!_tree) return null;
+    if (_tree.height === 0) {
+      // is leaf file or dir
+      return (
+        <Menu.Item key={_tree.slug} icon={<FileOutlined />}>
+          {_tree.filename}
+        </Menu.Item>
+      );
+    } else if (_tree.depth === 0) {
+      // is top level root node
+      return (
+        <Menu mode="inline" theme="dark" openKeys={openKeys} onOpenChange={onOpenChange}>
+          {_tree.children.map((child: FileNode) => constructMenuTree(child))}
+        </Menu>
+      );
+    } else {
+      // internal node
+      const isOpen = () => {
+        return !!tree ? openKeys.includes(_tree.slug) : false;
+      };
+      return (
+        <SubMenu
+          key={_tree.slug}
+          icon={isOpen() ? <CaretDownFilled /> : <CaretRightFilled />}
+          title={_tree.filename}
+        >
+          {_tree.children.map((child: FileNode) => constructMenuTree(child))}
+        </SubMenu>
+      );
+    }
+  };
   return (
     <Layout hasSider>
       <title>{pageTitle}</title>
@@ -58,33 +144,7 @@ const FSLayout = ({ pageTitle, children }: Props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
       >
-        <Menu mode="inline" theme="dark">
-          <Menu.Item key="1" icon={<MailOutlined />}>
-            Navigation One
-          </Menu.Item>
-          <Menu.Item key="2" icon={<CalendarOutlined />}>
-            Navigation Two
-          </Menu.Item>
-          <SubMenu key="sub1" icon={<AppstoreOutlined />} title="Navigation Two">
-            <Menu.Item key="3">Option 3</Menu.Item>
-            <Menu.Item key="4">Option 4</Menu.Item>
-            <SubMenu key="sub1-2" title="Submenu">
-              <Menu.Item key="5">Option 5</Menu.Item>
-              <Menu.Item key="6">Option 6</Menu.Item>
-            </SubMenu>
-          </SubMenu>
-          <SubMenu key="sub2" icon={<SettingOutlined />} title="Navigation Three">
-            <Menu.Item key="7">Option 7</Menu.Item>
-            <Menu.Item key="8">Option 8</Menu.Item>
-            <Menu.Item key="9">Option 9</Menu.Item>
-            <Menu.Item key="10">Option 10</Menu.Item>
-          </SubMenu>
-          <Menu.Item key="link" icon={<LinkOutlined />}>
-            <a href="https://huakunshen.com" target="_blank" rel="noopener noreferrer">
-              My Website
-            </a>
-          </Menu.Item>
-        </Menu>
+        {constructMenuTree(tree)}
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: siderWidth }}>
         <Header className="site-layout-background" style={{ padding: 0 }} />
