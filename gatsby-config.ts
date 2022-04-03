@@ -33,16 +33,9 @@ const config: GatsbyConfig = {
     {
       resolve: 'gatsby-source-filesystem',
       options: {
-        name: 'images',
-        path: './src/images/',
-      },
-      __key: 'images',
-    },
-    {
-      resolve: 'gatsby-source-filesystem',
-      options: {
         name: 'notes',
         path: './notes/',
+        extensions: [`.mdx`, `.md`],
       },
       __key: 'notes',
     },

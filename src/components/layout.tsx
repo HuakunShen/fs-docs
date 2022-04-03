@@ -49,14 +49,14 @@ const Layout = ({ pageTitle, children }: PropsType) => {
       <main>
         <h1>{pageTitle}</h1>
         {children}
-        <ul>
+        {/* <ul>
           {data.allMdx.nodes.map((node: MdxNode) => (
             <article key={node.id}>
               <h2>{node.frontmatter.title}</h2>
               <p>Posted: {node.frontmatter.date}</p>
             </article>
           ))}
-        </ul>
+        </ul> */}
       </main>
     </div>
   );
