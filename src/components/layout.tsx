@@ -20,7 +20,7 @@ import {
 } from '@ant-design/icons';
 import Fstree from './fs-tree';
 import DirectoryTree from './directory-tree';
-import { useStaticQuery, graphql } from 'gatsby';
+import { useStaticQuery, graphql, Link } from 'gatsby';
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -101,7 +101,7 @@ const FSLayout = ({ pageTitle, children }: Props) => {
       // is leaf file or dir
       return (
         <Menu.Item key={_tree.slug} icon={<FileOutlined />}>
-          {_tree.filename}
+          <Link to={_tree.slug}>{_tree.filename}</Link>
         </Menu.Item>
       );
     } else if (_tree.depth === 0) {
