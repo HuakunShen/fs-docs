@@ -8,7 +8,7 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
     createNodeField({
       node,
       name: `slug`,
-      value: node.relativePath,
+      value: `/notes/${node.relativePath}`,
     });
   }
 };
@@ -31,11 +31,11 @@ exports.createPages = async ({ graphql, actions }) => {
     }
   `);
   console.log(data.allFile.edges);
-  data.allFile.edges.forEach(edge => {
-    console.log(`/notes${edge.node.fields.slug}`)
+  data.allFile.edges.forEach((edge) => {
+    console.log(`/notes${edge.node.fields.slug}`);
     actions.createPage({
-      path: "/notes/" + edge.node.fields.slug,
-      component: path.resolve("./src/templates/doc.js"),
+      path: edge.node.fields.slug,
+      component: path.resolve("./src/templates/doc.tsx"),
       context: { slug: edge.node.fields.slug },
     });
   });

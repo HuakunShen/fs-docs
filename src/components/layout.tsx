@@ -2,48 +2,20 @@ interface Props {
   pageTitle: string;
   children: React.ReactNode;
 }
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import "../styles/App.css";
 import "../styles/Main.css";
-import { Layout, Menu, Switch, Divider, Breadcrumb } from "antd";
+import { Layout, Menu, Breadcrumb } from "antd";
 import { construct, FileNode, GqlNode as Node } from "../util/file-tree";
-import {
-  MailOutlined,
-  CalendarOutlined,
-  AppstoreOutlined,
-  SettingOutlined,
-  CaretRightFilled,
-  CaretDownFilled,
-  LinkOutlined,
-  FileOutlined,
-} from "@ant-design/icons";
-import Fstree from "./fs-tree";
-import DirectoryTree from "./directory-tree";
 import { useStaticQuery, graphql, Link } from "gatsby";
-import type { MenuProps, MenuTheme } from "antd/es/menu";
+import type { MenuProps } from "antd/es/menu";
+import { useSettingStore } from "../stores/setting";
 
 const { Header, Content, Footer, Sider } = Layout;
-const { SubMenu } = Menu;
 
 type GqlNode = {
   node: Node;
 };
-
-/**
- * What does a menu tree need?
- * Each node requires
- * - a unique key
- * - potentially an icon
- * - title (name)
- *
- * Sample Structure
- * Menu
- * 	Menu.Item
- * 	SubMenu
- * 		Menu.Item
- * 		SubMenu
- * 			Menu.Item
- */
 
 /**
  * Starting from version 4.20, Antd's menu no longer uses children, but items props.
@@ -57,7 +29,7 @@ const transformTree = (tree: FileNode): MenuItem => {
     label: children.length ? (
       tree.filename
     ) : (
-      <Link to={tree.slug}>tree.filename</Link>
+      <Link to={`${tree.slug}`}>{tree.filename}</Link>
     ),
     key: tree.slug,
     children: children.length ? children : undefined,
@@ -72,15 +44,11 @@ const FSLayout = ({ pageTitle, children }: Props) => {
   const onCollapse = (collapsed: boolean) => {
     setCollapsed(collapsed);
   };
+  const settingStore = useSettingStore();
 
   const onOpenChange = (keys: string[]) => {
     setOpenKeys(keys);
-    // const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
-    // if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-    //   setOpenKeys(keys);
-    // } else {
-    //   setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
-    // }
+    settingStore.setOpenKeys(keys);
   };
 
   const data = useStaticQuery(graphql`
@@ -102,58 +70,18 @@ const FSLayout = ({ pageTitle, children }: Props) => {
 
   // initialize the file tree
   useEffect(() => {
-    setTree(construct(data.allFile.edges.map((node: GqlNode) => node.node)));
+    const constructedTree = construct(
+      data.allFile.edges.map((node: GqlNode) => node.node)
+    );
+    setTree(constructedTree);
+    setOpenKeys(settingStore.openKeys);
   }, []);
 
   // update sider width when tree is updated
   useEffect(() => {
-    console.log(tree);
-    if (tree) console.log(transformTree(tree));
     if (tree) setSiderWidth(tree.height * 70);
   }, [tree]);
 
-  // watch openKeys (menu items open)
-  useEffect(() => {
-    console.log(openKeys);
-  }, [openKeys]);
-
-  const constructMenuTree = (_tree: FileNode | null) => {
-    if (!_tree) return null;
-    if (_tree.height === 0) {
-      // is leaf file or dir
-      return (
-        <Menu.Item key={_tree.slug} icon={<FileOutlined />}>
-          <Link to={_tree.slug}>{_tree.filename}</Link>
-        </Menu.Item>
-      );
-    } else if (_tree.depth === 0) {
-      // is top level root node
-      return (
-        <Menu
-          mode="inline"
-          theme="dark"
-          openKeys={openKeys}
-          onOpenChange={onOpenChange}
-        >
-          {_tree.children.map((child: FileNode) => constructMenuTree(child))}
-        </Menu>
-      );
-    } else {
-      // internal node
-      const isOpen = () => {
-        return !!tree ? openKeys.includes(_tree.slug) : false;
-      };
-      return (
-        <SubMenu
-          key={_tree.slug}
-          icon={isOpen() ? <CaretDownFilled /> : <CaretRightFilled />}
-          title={_tree.filename}
-        >
-          {_tree.children.map((child: FileNode) => constructMenuTree(child))}
-        </SubMenu>
-      );
-    }
-  };
   return (
     <Layout hasSider>
       <title>{pageTitle}</title>
@@ -171,7 +99,6 @@ const FSLayout = ({ pageTitle, children }: Props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
       >
-        {/* {constructMenuTree(tree)} */}
         <Menu
           items={tree?.children.map((node) => transformTree(node))}
           mode="inline"

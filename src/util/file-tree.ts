@@ -143,11 +143,11 @@ const getAllDirs = (p: string) => {
  */
 export const construct = (nodes: GqlNode[]) => {
   // map relative path to a graphql Node
-  const path2nodeMap = new Map<string, GqlNode>();
-  nodes.forEach((node) => path2nodeMap.set(node.relativePath, node));
-  const relativePaths = nodes.map((node) => node.relativePath);
-  const filePathSet = new Set(relativePaths);
-  const dirPaths = relativePaths.map((p) => getAllDirs(p));
+  const slug2nodeMap = new Map<string, GqlNode>();
+  nodes.forEach((node) => slug2nodeMap.set(node.fields.slug, node));
+  const slugs = nodes.map((node) => node.fields.slug);
+  const slugSet = new Set(slugs);
+  const dirPaths = slugs.map((p) => getAllDirs(p));
   const dirPathSet = new Set(dirPaths.flat());
   const rootNode = new FileNode(
     '/',
@@ -164,17 +164,17 @@ export const construct = (nodes: GqlNode[]) => {
   map.set('', rootNode);
   // construct dir nodes O(n)
   Array.from(dirPathSet)
-    .concat(Array.from(filePathSet))
+    .concat(Array.from(slugSet))
     .forEach((p) => {
       map.set(
         p,
         new FileNode(
-          '/' + p,
+          p,
           p,
           '',
           path.basename(p),
-          filePathSet.has(p) ? path2nodeMap.get(p)?.ext : '',
-          filePathSet.has(p) ? FileType.File : FileType.Dir,
+          slugSet.has(p) ? slug2nodeMap.get(p)?.ext : '',
+          slugSet.has(p) ? FileType.File : FileType.Dir,
           null, // parent is null for now, will be filled
           [] // children set empty for now, will be filled
         )
@@ -185,11 +185,11 @@ export const construct = (nodes: GqlNode[]) => {
   map.forEach((node: FileNode, relPath: string) => {
     if (relPath !== '') {
       // not root node
-      const parent = map.get(path.dirname(node.relativePath));
+      const parent = map.get(path.dirname(node.slug));
       if (!!parent) {
         node.parent = parent;
         parent.children.push(node);
-      } else throw new Error(`No Parent Found for FileNode: ${node.relativePath}`);
+      } else throw new Error(`No Parent Found for FileNode: ${node.slug}`);
     }
   });
 
