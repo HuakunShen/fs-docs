@@ -5,7 +5,8 @@ interface Props {
 import React, { useEffect, useState, createContext } from "react";
 import "../styles/App.css";
 import "../styles/Main.css";
-import { Layout, Menu, Breadcrumb } from "antd";
+import { Button, Layout, Menu, Breadcrumb } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { construct, FileNode, GqlNode as Node } from "../util/file-tree";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import type { MenuProps } from "antd/es/menu";
@@ -79,7 +80,7 @@ const FSLayout = ({ pageTitle, children }: Props) => {
 
   // update sider width when tree is updated
   useEffect(() => {
-    if (tree) setSiderWidth(tree.height * 70);
+    if (tree) setSiderWidth(tree.height * 50);
   }, [tree]);
 
   return (
@@ -98,9 +99,10 @@ const FSLayout = ({ pageTitle, children }: Props) => {
         collapsible
         collapsed={collapsed}
         onCollapse={onCollapse}
+        collapsedWidth={0}
       >
         <Menu
-          items={tree?.children.map((node) => transformTree(node))}
+          items={tree?.children[0].children.map((node) => transformTree(node))}
           mode="inline"
           theme="dark"
           openKeys={openKeys}
@@ -108,12 +110,12 @@ const FSLayout = ({ pageTitle, children }: Props) => {
         />
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: siderWidth }}>
-        <Header className="site-layout-background" style={{ padding: 0 }} />
+        {/* <Header className="site-layout-background" style={{ padding: 0 }} /> */}
         <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
-          <Breadcrumb style={{ margin: "16px 0" }}>
+          {/* <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
+          </Breadcrumb> */}
           <div className="site-layout-background" style={{ padding: 24 }}>
             <main>{children}</main>
           </div>

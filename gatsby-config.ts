@@ -5,7 +5,7 @@ const config: GatsbyConfig = {
   siteMetadata: {
     title: `FS Docs`,
     siteUrl: `https://www.yourdomain.tld`,
-    notesAbsRoot: path.resolve("./notes/SQL"),
+    notesAbsRoot: path.resolve("./PATH"),
   },
   // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
   // If you use VSCode you can also use the GraphQL plugin
@@ -123,8 +123,8 @@ const config: GatsbyConfig = {
     {
       resolve: "gatsby-source-filesystem",
       options: {
-        name: "notes",
-        path: "./notes",
+        name: "PATH",
+        path: "./PATH",
       },
     },
   ],

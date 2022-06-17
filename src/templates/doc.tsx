@@ -4,20 +4,18 @@ import { graphql, useStaticQuery } from "gatsby";
 
 const doc = ({ data }: any) => {
   const markdown = data.file.childMarkdownRemark;
-  const {ext} = data.file
-  let htmlContent = ""
+  const { ext } = data.file;
+  let htmlContent = "";
   if (ext === ".md") {
-    htmlContent = markdown.html
+    htmlContent = markdown.html;
   } else {
-    htmlContent = "<h1>File Type Not Handled</h1>"
+    htmlContent = "<h1>File Type Not Handled</h1>";
   }
-  
+
   return (
-    <Layout pageTitle="Index Page">
-      <div className="doc">
-        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
-      </div>
-    </Layout>
+    <div className="doc">
+      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    </div>
   );
 };
 

@@ -1,4 +1,19 @@
 /* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
-@import '~antd/dist/antd.css';
+@import "~antd/dist/antd.css";
+
+table {
+  border-collapse: collapse;
+}
+
+.line-numbers-rows {
+    top: 1em !important;
+}
+
+td,
+th {
+  border: 1px solid #999;
+  padding: 0.5rem;
+  text-align: left;
+}
