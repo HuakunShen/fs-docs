@@ -2,12 +2,11 @@ interface Props {
   pageTitle: string;
   children: React.ReactNode;
 }
-
-import React, { useEffect, useState } from 'react';
-import '../styles/App.css';
-import '../styles/Main.css';
-import { Layout, Menu, Switch, Divider, Breadcrumb } from 'antd';
-import { construct, FileNode, GqlNode as Node } from '../util/file-tree';
+import React, { useEffect, useState } from "react";
+import "../styles/App.css";
+import "../styles/Main.css";
+import { Layout, Menu, Switch, Divider, Breadcrumb } from "antd";
+import { construct, FileNode, GqlNode as Node } from "../util/file-tree";
 import {
   MailOutlined,
   CalendarOutlined,
@@ -17,10 +16,12 @@ import {
   CaretDownFilled,
   LinkOutlined,
   FileOutlined,
-} from '@ant-design/icons';
-import Fstree from './fs-tree';
-import DirectoryTree from './directory-tree';
-import { useStaticQuery, graphql, Link } from 'gatsby';
+} from "@ant-design/icons";
+import Fstree from "./fs-tree";
+import DirectoryTree from "./directory-tree";
+import { useStaticQuery, graphql, Link } from "gatsby";
+import type { MenuProps, MenuTheme } from "antd/es/menu";
+
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
@@ -43,6 +44,25 @@ type GqlNode = {
  * 		SubMenu
  * 			Menu.Item
  */
+
+/**
+ * Starting from version 4.20, Antd's menu no longer uses children, but items props.
+ * I have to turn my constructed tree into the version antd accepts
+ */
+type MenuItem = Required<MenuProps>["items"][number];
+const transformTree = (tree: FileNode): MenuItem => {
+  if (!tree) return tree;
+  const children = tree.children.map((node) => transformTree(node));
+  return {
+    label: children.length ? (
+      tree.filename
+    ) : (
+      <Link to={tree.slug}>tree.filename</Link>
+    ),
+    key: tree.slug,
+    children: children.length ? children : undefined,
+  };
+};
 
 const FSLayout = ({ pageTitle, children }: Props) => {
   const [siderWidth, setSiderWidth] = useState<number>(300); // TODO: set this value based on the file tree height
@@ -87,6 +107,8 @@ const FSLayout = ({ pageTitle, children }: Props) => {
 
   // update sider width when tree is updated
   useEffect(() => {
+    console.log(tree);
+    if (tree) console.log(transformTree(tree));
     if (tree) setSiderWidth(tree.height * 70);
   }, [tree]);
 
@@ -107,7 +129,12 @@ const FSLayout = ({ pageTitle, children }: Props) => {
     } else if (_tree.depth === 0) {
       // is top level root node
       return (
-        <Menu mode="inline" theme="dark" openKeys={openKeys} onOpenChange={onOpenChange}>
+        <Menu
+          mode="inline"
+          theme="dark"
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
+        >
           {_tree.children.map((child: FileNode) => constructMenuTree(child))}
         </Menu>
       );
@@ -133,9 +160,9 @@ const FSLayout = ({ pageTitle, children }: Props) => {
       <Sider
         width={siderWidth}
         style={{
-          overflow: 'auto',
-          height: '100vh',
-          position: 'fixed',
+          overflow: "auto",
+          height: "100vh",
+          position: "fixed",
           left: 0,
           top: 0,
           bottom: 0,
@@ -144,12 +171,19 @@ const FSLayout = ({ pageTitle, children }: Props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
       >
-        {constructMenuTree(tree)}
+        {/* {constructMenuTree(tree)} */}
+        <Menu
+          items={tree?.children.map((node) => transformTree(node))}
+          mode="inline"
+          theme="dark"
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
+        />
       </Sider>
       <Layout className="site-layout" style={{ marginLeft: siderWidth }}>
         <Header className="site-layout-background" style={{ padding: 0 }} />
-        <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
+        <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
+          <Breadcrumb style={{ margin: "16px 0" }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
             <Breadcrumb.Item>Bill</Breadcrumb.Item>
           </Breadcrumb>
@@ -157,7 +191,9 @@ const FSLayout = ({ pageTitle, children }: Props) => {
             <main>{children}</main>
           </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>FS Docs ©2022 Created by Huakun Shen</Footer>
+        <Footer style={{ textAlign: "center" }}>
+          FS Docs ©2022 Created by Huakun Shen
+        </Footer>
       </Layout>
     </Layout>
   );

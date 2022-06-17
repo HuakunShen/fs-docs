@@ -1,51 +1,33 @@
-import type { GatsbyConfig } from 'gatsby';
+import type { GatsbyConfig } from "gatsby";
 
 const config: GatsbyConfig = {
   siteMetadata: {
     title: `FS Docs`,
-    siteUrl: `https://fs-docs.huakun.tech`,
+    siteUrl: `https://www.yourdomain.tld`
   },
-  plugins: [
-    // 'gatsby-plugin-theme-ui',
-    // {
-    //   resolve: 'gatsby-plugin-antd',
-    //   options: {
-    //     style: true,
-    //   },
-    // },
-    {
-      resolve: 'gatsby-plugin-google-analytics',
-      options: {
-        trackingId: 'G-TGCKB63KWS',
-      },
-    },
-    'gatsby-plugin-image',
-    'gatsby-plugin-react-helmet',
-    'gatsby-plugin-sitemap',
-    {
+  // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
+  // If you use VSCode you can also use the GraphQL plugin
+  // Learn more at: https://gatsby.dev/graphql-typegen
+  graphqlTypegen: true,
+  plugins: ["gatsby-plugin-sass", {
+    resolve: 'gatsby-plugin-google-analytics',
+    options: {
+      "trackingId": "G-TGCKB63KWS"
+    }
+  }, "gatsby-plugin-image", "gatsby-plugin-react-helmet", "gatsby-plugin-sitemap", {
       resolve: 'gatsby-plugin-manifest',
       options: {
-        icon: 'src/images/icon.png',
-      },
-    },
+        "icon": "src/images/icon.png"
+      }
+    }, "gatsby-plugin-mdx", "gatsby-transformer-remark", "gatsby-plugin-sharp", "gatsby-transformer-sharp",
     {
-			resolve: 'gatsby-plugin-mdx',
-			options: {
-				extensions: ['.md', '.mdx']
-			}
-		},
-    'gatsby-plugin-sharp',
-    'gatsby-transformer-sharp',
-    {
-      resolve: 'gatsby-source-filesystem',
+      resolve: "gatsby-source-filesystem",
       options: {
-        name: 'notes',
-        path: './notes/',
+        name: "notes",
+        path: "./notes/SQL",
       },
-      __key: 'notes',
     },
-		// 'gatsby-source-filesystem-slug'
-  ],
+  ]
 };
 
 export default config;

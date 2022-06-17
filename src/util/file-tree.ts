@@ -39,6 +39,7 @@ export class FileNode {
     this.children = children;
     this.height = height;
     this.depth = depth;
+    
   }
 
   /**
