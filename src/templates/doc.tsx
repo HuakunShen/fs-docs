@@ -12,8 +12,8 @@ const doc = ({ data }: any) => {
   }
 
   return (
-    <div className="doc grid grid-cols-12">
-      <div className="col-span-9">
+    <div className="doc grid md:grid-cols-12 sm:grid-cols-1">
+      <div className="col-span-9 md:order-first sm:order-last">
         <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </div>
       {markdown && markdown.tableOfContents && (
