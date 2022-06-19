@@ -93,27 +93,20 @@ const config: GatsbyConfig = {
           "gatsby-remark-copy-linked-files",
           "gatsby-remark-responsive-iframe",
           {
-            resolve: `gatsby-transformer-remark`,
+            resolve: `gatsby-remark-highlight-code`,
             options: {
-              plugins: [
-                {
-                  resolve: `gatsby-remark-highlight-code`,
-                  options: {
-                    lineNumbers: true,
-                    editable: false
-                  }
-                },
-                // {
-                //   resolve: `gatsby-remark-vscode`,
-                //   options: {
-                //     // theme: "Dark+ (default dark)"
-                //     theme: "Atom One Dark",
-                //     extensions: ["vscode-theme-onedark"],
-                //   },
-                // },
-              ],
-            },
+              lineNumbers: true,
+              editable: false
+            }
           },
+          // {
+          //   resolve: `gatsby-remark-vscode`,
+          //   options: {
+          //     // theme: "Dark+ (default dark)"
+          //     theme: "Atom One Dark",
+          //     extensions: ["vscode-theme-onedark"],
+          //   },
+          // },
           {
             resolve: `gatsby-remark-katex`,
             options: {
