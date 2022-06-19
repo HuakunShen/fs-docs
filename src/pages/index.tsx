@@ -1,13 +1,11 @@
-import * as React from 'react';
-import { Button } from 'antd';
-import Layout from '../components/layout';
+import * as React from "react";
+import { Button } from "antd";
 
 const App = () => (
-  <Layout pageTitle="Index Page">
-    <div className="App">
-      <Button type="primary">Button</Button>
-    </div>
-  </Layout>
+  <div className="App">
+    <h1>Welcome to PATH</h1>
+    <h2>My Second Brain</h2>
+  </div>
 );
 
 export default App;

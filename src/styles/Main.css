@@ -1,0 +1,15 @@
+:root {
+    --main-menu-item-height: 1.5rem;
+}
+
+.ant-menu-sub.ant-menu-inline>.ant-menu-item {
+    height: var(--main-menu-item-height);
+}
+
+.ant-menu-inline>.ant-menu-submenu>.ant-menu-submenu-title {
+    height: var(--main-menu-item-height);
+}
+
+.ant-menu-sub.ant-menu-inline>.ant-menu-submenu>.ant-menu-submenu-title {
+    height: var(--main-menu-item-height);
+}

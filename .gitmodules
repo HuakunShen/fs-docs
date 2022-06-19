@@ -1,3 +1,3 @@
-[submodule "notes/LearnSQL"]
-	path = notes/LearnSQL
-	url = git@github.com:HuakunShen/LearnSQL.git
+[submodule "PATH"]
+	path = PATH
+	url = git@github.com:HuakunShen/PATH.git
