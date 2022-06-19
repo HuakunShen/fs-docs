@@ -45,8 +45,16 @@ tbody tr.active-row {
 }
 
 .line-numbers-rows {
-  top: 1em !important;
-  left: 1em !important;
+  /* top: 1em !important;
+  left: 1em !important; */
+}
+
+div.container > code > div:nth-child(1)::before {
+  color: white !important;
+}
+
+code > div.line-number::before {
+  color: white !important;
 }
 
 h1 {
@@ -67,8 +75,6 @@ h5 {
 h6 {
   font-size: 0.75em;
 }
-
-
 
 /* Menu Bar Styling */
 

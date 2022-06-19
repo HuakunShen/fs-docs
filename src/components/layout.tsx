@@ -3,9 +3,8 @@ interface Props {
   children: React.ReactNode;
 }
 import React, { useEffect, useState, createContext } from "react";
-import "../styles/App.css";
 import "../styles/Main.css";
-import { Button, Layout, Menu, Breadcrumb } from "antd";
+import { Button, Layout, Menu, Breadcrumb, Spin } from "antd";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { construct, FileNode, GqlNode as Node } from "../util/file-tree";
 import { useStaticQuery, graphql, Link } from "gatsby";
@@ -14,9 +13,11 @@ import { useSettingStore } from "../stores/setting";
 import { DocSearch } from "@docsearch/react";
 import "@docsearch/css";
 import { Helmet } from "react-helmet";
+import { defineCustomElements as deckDeckGoHighlightElement } from "@deckdeckgo/highlight-code/dist/loader";
+import "../styles/App.css";
 
 const { Header, Content, Footer, Sider } = Layout;
-
+deckDeckGoHighlightElement();
 type GqlNode = {
   node: Node;
 };
@@ -101,7 +102,6 @@ const FSLayout = ({ pageTitle, children }: Props) => {
           crossOrigin="anonymous"
         />
       </Helmet>
-
       <Sider
         width={siderWidth}
         style={{

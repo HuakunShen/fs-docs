@@ -17,6 +17,7 @@
     "publish:netlify": "netlify deploy --prod"
   },
   "dependencies": {
+    "@deckdeckgo/highlight-code": "^3.6.0",
     "@docsearch/react": "^3.1.0",
     "@mdx-js/mdx": "^1.6.22",
     "@mdx-js/react": "^1.6.22",
@@ -42,6 +43,7 @@
     "gatsby-remark-mermaid": "^2.1.0",
     "gatsby-remark-prismjs": "^6.16.0",
     "gatsby-remark-responsive-iframe": "^5.16.0",
+    "gatsby-remark-vscode": "^3.3.1",
     "gatsby-source-filesystem": "^4.16.0",
     "gatsby-transformer-remark": "^5.16.0",
     "gatsby-transformer-sharp": "^4.16.0",
@@ -52,6 +54,7 @@
     "react-dom": "^18.1.0",
     "react-helmet": "^6.1.0",
     "sass": "^1.52.3",
+    "vscode-theme-onedark": "github:akamud/vscode-theme-onedark",
     "zustand": "^4.0.0-rc.1"
   },
   "devDependencies": {
