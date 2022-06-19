@@ -85,3 +85,12 @@ h6 {
 .DocSearch.DocSearch-Button {
   width: 250px;
 }
+
+.ant-menu-sub.ant-menu-inline > .ant-menu-item,
+.ant-menu-sub.ant-menu-inline > .ant-menu-submenu > .ant-menu-submenu-title {
+  height: 25px !important;
+}
+
+.ant-menu-submenu-title {
+  max-height: 30px !important;
+}

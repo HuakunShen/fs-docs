@@ -87,7 +87,7 @@ const FSLayout = ({ pageTitle, children }: Props) => {
     if (collapsed || !tree) {
       setSiderWidth(80);
     } else {
-      setSiderWidth(tree.height * 40);
+      setSiderWidth(tree.height * 50);
     }
   }, [tree, collapsed]);
 
