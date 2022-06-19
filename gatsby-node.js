@@ -31,9 +31,9 @@ exports.createPages = async ({ graphql, actions }) => {
       }
     }
   `);
-  console.log(data.allFile.edges);
+  // console.log(data.allFile.edges);
   data.allFile.edges.forEach((edge) => {
-    console.log(`/PATH${edge.node.fields.slug}`);
+    // console.log(`/PATH${edge.node.fields.slug}`);
     actions.createPage({
       path: edge.node.fields.slug,
       component: path.resolve("./src/templates/doc.tsx"),

@@ -11,6 +11,9 @@ import { construct, FileNode, GqlNode as Node } from "../util/file-tree";
 import { useStaticQuery, graphql, Link } from "gatsby";
 import type { MenuProps } from "antd/es/menu";
 import { useSettingStore } from "../stores/setting";
+import { DocSearch } from "@docsearch/react";
+import "@docsearch/css";
+import { Helmet } from "react-helmet";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -80,12 +83,25 @@ const FSLayout = ({ pageTitle, children }: Props) => {
 
   // update sider width when tree is updated
   useEffect(() => {
-    if (tree) setSiderWidth(tree.height * 50);
-  }, [tree]);
+    if (collapsed || !tree) {
+      setSiderWidth(80);
+    } else {
+      setSiderWidth(tree.height * 40);
+    }
+  }, [tree, collapsed]);
 
   return (
     <Layout hasSider>
-      <title>{pageTitle}</title>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>{pageTitle}</title>
+        <link
+          rel="preconnect"
+          href={`https://${process.env.ALGOLIA_APP_ID}-dsn.algolia.net`}
+          crossOrigin="anonymous"
+        />
+      </Helmet>
+
       <Sider
         width={siderWidth}
         style={{
@@ -99,17 +115,28 @@ const FSLayout = ({ pageTitle, children }: Props) => {
         collapsible
         collapsed={collapsed}
         onCollapse={onCollapse}
-        collapsedWidth={0}
+        // collapsedWidth={0}
       >
+        <span className="sticky top-2">
+          <DocSearch
+            appId={process.env.ALGOLIA_APP_ID || ""}
+            indexName={process.env.ALGOLIA_INDEX_NAME || ""}
+            apiKey={process.env.ALGOLIA_SEARCH_ONLY_KEY || ""}
+          />
+        </span>
         <Menu
           items={tree?.children[0].children.map((node) => transformTree(node))}
           mode="inline"
           theme="dark"
           openKeys={openKeys}
           onOpenChange={onOpenChange}
+          // style={{width: `${siderWidth}px`}}
         />
       </Sider>
-      <Layout className="site-layout" style={{ marginLeft: siderWidth }}>
+      <Layout
+        className="site-layout transform duration-300"
+        style={{ marginLeft: siderWidth }}
+      >
         {/* <Header className="site-layout-background" style={{ padding: 0 }} /> */}
         <Content style={{ margin: "24px 16px 0", overflow: "initial" }}>
           {/* <Breadcrumb style={{ margin: "16px 0" }}>

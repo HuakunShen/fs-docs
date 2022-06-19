@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import Layout from "../components/layout";
-import { graphql, useStaticQuery } from "gatsby";
+import React from "react";
+import { graphql } from "gatsby";
 
 const doc = ({ data }: any) => {
   const markdown = data.file.childMarkdownRemark;
@@ -13,8 +12,15 @@ const doc = ({ data }: any) => {
   }
 
   return (
-    <div className="doc">
-      <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+    <div className="doc grid grid-cols-12">
+      <div className="col-span-9">
+        <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </div>
+      {markdown && markdown.tableOfContents && (
+        <div className="col-span-3">
+          <div className="toc sticky top-5" dangerouslySetInnerHTML={{ __html: markdown.tableOfContents }} />
+        </div>
+      )}
     </div>
   );
 };
@@ -34,6 +40,11 @@ export const query = graphql`
         html
         htmlAst
         rawMarkdownBody
+        frontmatter {
+          date
+          title
+        }
+        tableOfContents
         internal {
           content
           description

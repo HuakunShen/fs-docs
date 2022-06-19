@@ -1,10 +1,52 @@
 import type { GatsbyConfig } from "gatsby";
 import path from "path";
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
+const dataForAlgoliaIndexQuery = `
+query {
+  allFile(filter: {ext: {eq: ".md"}}) {
+    nodes {
+      objectID: id
+      childMarkdownRemark {
+        rawMarkdownBody
+        frontmatter {
+          date
+          title
+        }
+      }
+      base
+      ext
+      fields {
+        slug
+      }
+      name
+      relativeDirectory
+      relativePath
+    }
+  }
+}`;
+
+const queries = [
+  {
+    query: dataForAlgoliaIndexQuery,
+    transformer: ({ data }: any) => data.allFile.nodes, // optional
+    indexName: "fs-docs", // overrides main index name, optional
+    settings: {
+      // optional, any index settings
+      // Note: by supplying settings, you will overwrite all existing settings on the index
+    },
+    matchFields: ["slug", "modified"], // Array<String> overrides main match fields, optional
+    mergeSettings: false, // optional, defaults to false. See notes on mergeSettings below
+    queryVariables: {}, // optional. Allows you to use graphql query variables in the query
+  },
+];
 
 const config: GatsbyConfig = {
   siteMetadata: {
     title: `FS Docs`,
-    siteUrl: `https://www.yourdomain.tld`,
+    siteUrl: `https://brain.huakunshen.com`,
     notesAbsRoot: path.resolve("./PATH"),
   },
   // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
@@ -12,6 +54,10 @@ const config: GatsbyConfig = {
   // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
+    {
+      resolve: "gatsby-plugin-exclude",
+      options: { paths: ["**/.git", "**/.git/*"] },
+    },
     "gatsby-plugin-sass",
     {
       resolve: "gatsby-plugin-google-analytics",
@@ -42,6 +88,10 @@ const config: GatsbyConfig = {
       resolve: `gatsby-transformer-remark`,
       options: {
         plugins: [
+          "gatsby-remark-mermaid",
+          "gatsby-remark-autolink-headers",
+          "gatsby-remark-copy-linked-files",
+          "gatsby-remark-responsive-iframe",
           {
             resolve: `gatsby-remark-katex`,
             options: {
@@ -125,6 +175,30 @@ const config: GatsbyConfig = {
       options: {
         name: "PATH",
         path: "./PATH",
+        ignore: [`**/\.*`, `**/\.git`, `**/\.git/*`],
+      },
+    },
+    {
+      // This plugin must be placed last in your list of plugins to ensure that it can query all the GraphQL data
+      resolve: `gatsby-plugin-algolia`,
+      options: {
+        appId: process.env.ALGOLIA_APP_ID,
+        // Use Admin API key without GATSBY_ prefix, so that the key isn't exposed in the application
+        // Tip: use Search API key with GATSBY_ prefix to access the service from within components
+        apiKey: process.env.ALGOLIA_API_KEY,
+        indexName: process.env.ALGOLIA_INDEX_NAME, // for all queries
+        queries,
+        chunkSize: 10000, // default: 1000
+        settings: {
+          // optional, any index settings
+          // Note: by supplying settings, you will overwrite all existing settings on the index
+        },
+        enablePartialUpdates: true, // default: false
+        matchFields: ["slug", "modified"], // Array<String> default: ['modified']
+        concurrentQueries: false, // default: true
+        skipIndexing: true, // default: false, useful for e.g. preview deploys or local development
+        continueOnFailure: false, // default: false, don't fail the build if algolia indexing fails
+        algoliasearchOptions: undefined, // default: { timeouts: { connect: 1, read: 30, write: 30 } }, pass any different options to the algoliasearch constructor
       },
     },
   ],
